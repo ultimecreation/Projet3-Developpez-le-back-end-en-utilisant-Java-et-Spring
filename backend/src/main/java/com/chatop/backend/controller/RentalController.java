@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -25,6 +27,7 @@ public class RentalController {
             @ApiResponse(responseCode = "200", ref = "getAllRentalsSuccessRequestApi"),
             @ApiResponse(responseCode = "401", ref = "unauthorizedRequestApi"),
     })
+    @Parameter(in = ParameterIn.HEADER, description = "Bearer Token String Required", name = "Authorization")
     @GetMapping("/rentals")
     public ResponseEntity<?> getAllRentals() {
         // TODO: process POST request
@@ -39,6 +42,7 @@ public class RentalController {
             @ApiResponse(responseCode = "200", ref = "getSingleRentalSuccessRequestApi"),
             @ApiResponse(responseCode = "401", ref = "unauthorizedRequestApi"),
     })
+    @Parameter(in = ParameterIn.HEADER, description = "Bearer Token String Required", name = "Authorization")
     @GetMapping("/rentals/{id}")
     public ResponseEntity<?> getRentalById(@PathVariable int id) {
         // TODO: process POST request
@@ -53,6 +57,7 @@ public class RentalController {
             @ApiResponse(responseCode = "200", ref = "createRentalSuccessRequestApi"),
             @ApiResponse(responseCode = "401", ref = "unauthorizedRequestApi"),
     })
+    @Parameter(in = ParameterIn.HEADER, description = "Bearer Token String Required", name = "Authorization")
     @PostMapping("/rentals")
     public ResponseEntity<?> createRental(@PathVariable int id) {
         // TODO: process POST request
@@ -67,6 +72,7 @@ public class RentalController {
             @ApiResponse(responseCode = "200", ref = "updateRentalSuccessRequestApi"),
             @ApiResponse(responseCode = "401", ref = "unauthorizedRequestApi"),
     })
+    @Parameter(in = ParameterIn.HEADER, description = "Bearer Token String Required", name = "Authorization")
     @PutMapping("/rentals/{id}")
     public ResponseEntity<?> updateRental(@PathVariable int id) {
         // TODO: process POST request
