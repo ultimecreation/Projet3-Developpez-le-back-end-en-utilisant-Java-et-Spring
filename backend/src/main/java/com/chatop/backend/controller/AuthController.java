@@ -9,6 +9,10 @@ import com.chatop.backend.entity.User;
 import com.chatop.backend.repository.UserRepository;
 import com.chatop.backend.service.JwtService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
 import java.util.Date;
@@ -23,8 +27,10 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.web.bind.annotation.GetMapping;
 
 @RestController
+@Tag(name = "Authentication")
 @RequestMapping("api/auth")
 public class AuthController {
 
@@ -37,8 +43,14 @@ public class AuthController {
     @Autowired
     private AuthenticationManager authenticationManager;
 
+    @Operation(responses = {
+            @ApiResponse(responseCode = "200", ref = "authSuccessRequestApi"),
+            @ApiResponse(responseCode = "400", ref = "registerBadRequestApi"),
+            @ApiResponse(responseCode = "401", ref = "unauthorizedRequestApi"),
+    })
     @PostMapping("/register")
-    public ResponseEntity<Object> register(@Valid @RequestBody RegisterDto registerDto, BindingResult result) {
+    public ResponseEntity<Object> register(@Valid @RequestBody RegisterDto registerDto,
+            BindingResult result) {
 
         if (result.hasErrors()) {
             var errorsList = result.getAllErrors();
@@ -72,6 +84,11 @@ public class AuthController {
         return ResponseEntity.badRequest().body("An unexpected error occured");
     }
 
+    @Operation(responses = {
+            @ApiResponse(responseCode = "200", ref = "authSuccessRequestApi"),
+            @ApiResponse(responseCode = "400", ref = "loginBadRequestApi"),
+            @ApiResponse(responseCode = "401", ref = "unauthorizedRequestApi"),
+    })
     @PostMapping("/login")
     public ResponseEntity<Object> login(@Valid @RequestBody LoginDto loginDto, BindingResult result) {
 
@@ -101,6 +118,18 @@ public class AuthController {
         }
 
         return ResponseEntity.badRequest().body("An unexpected error occured");
+    }
+
+    @Operation(responses = {
+            @ApiResponse(responseCode = "200", ref = "meSuccessRequestApi"),
+            @ApiResponse(responseCode = "401", ref = "unauthorizedRequestApi"),
+    })
+    @SecurityRequirement(name = "Bearer")
+    @GetMapping("/me")
+    public ResponseEntity<?> me() {
+        var user = userRepository.findById(24);
+
+        return ResponseEntity.ok(user);
     }
 
 }

@@ -1,6 +1,8 @@
 package com.chatop.backend.dto;
 
 import com.chatop.backend.validation.UniqueEmailConstraint;
+
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.Data;
 
@@ -11,6 +13,7 @@ public class RegisterDto {
     private String name;
 
     @NotEmpty(message = "email is required")
+    @Email(message = "invalid email format")
     @UniqueEmailConstraint
     private String email;
 
