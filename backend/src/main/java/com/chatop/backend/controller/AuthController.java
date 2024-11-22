@@ -10,6 +10,8 @@ import com.chatop.backend.repository.UserRepository;
 import com.chatop.backend.service.JwtService;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -124,6 +126,7 @@ public class AuthController {
             @ApiResponse(responseCode = "200", ref = "meSuccessRequestApi"),
             @ApiResponse(responseCode = "401", ref = "unauthorizedRequestApi"),
     })
+    @Parameter(in = ParameterIn.HEADER, description = "Bearer Token String Required", name = "Authorization")
     @SecurityRequirement(name = "Bearer")
     @GetMapping("/me")
     public ResponseEntity<?> me() {
