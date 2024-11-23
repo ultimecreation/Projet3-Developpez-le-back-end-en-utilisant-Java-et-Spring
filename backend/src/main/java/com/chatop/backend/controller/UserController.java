@@ -1,12 +1,18 @@
 package com.chatop.backend.controller;
 
 import java.util.HashMap;
+import java.util.Optional;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.chatop.backend.dto.UserResponseDto;
+import com.chatop.backend.entity.User;
+import com.chatop.backend.repository.UserRepository;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -21,6 +27,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @RequestMapping("/api")
 public class UserController {
 
+    @Autowired
+    UserRepository userRepository;
+
     @Operation(responses = {
             @ApiResponse(responseCode = "200", ref = "userSuccessRequestApi"),
             @ApiResponse(responseCode = "400", ref = "userBadRequestRequestApi"),
@@ -29,14 +38,11 @@ public class UserController {
     @Parameter(in = ParameterIn.HEADER, description = "Bearer Token String Required", name = "Authorization")
     @GetMapping("/user/{id}")
     public ResponseEntity<?> messages(@PathVariable int id) {
-        // TODO: process POST request
-
-        var response = new HashMap<String, String>();
-        response.put("id", "1");
-        response.put("name", "Owner Name");
-        response.put("email", "1");
-        response.put("created_at", "2022/02/02");
-        response.put("updated_at", "2022/08/02");
-        return ResponseEntity.ok(response);
+        User user = userRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("User not found"));
+        if (user != null) {
+            UserResponseDto userToReturn = new UserResponseDto(user);
+            return ResponseEntity.ok(userToReturn);
+        }
+        return ResponseEntity.badRequest().body("An unexpected error occured");
     }
 }

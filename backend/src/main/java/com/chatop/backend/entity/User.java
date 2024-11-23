@@ -7,6 +7,8 @@ import java.util.List;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -31,11 +33,11 @@ public class User implements UserDetails {
 
     private String password;
 
-    @Column(name = "created_at")
-    private Date createdAt;
+    @JsonFormat(pattern = "yyyy-dd-MM")
+    private Date created_at;
 
-    @Column(name = "updated_at")
-    private Date updatedAt;
+    @JsonFormat(pattern = "yyyy-dd-MM")
+    private Date updated_at;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

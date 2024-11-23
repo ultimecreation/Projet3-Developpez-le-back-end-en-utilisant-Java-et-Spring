@@ -71,7 +71,8 @@ public class AuthController {
         user.setName(registerDto.getName());
         user.setEmail(registerDto.getEmail());
         user.setPassword(hashedPassword);
-        user.setCreatedAt(new Date());
+        user.setCreated_at(new Date());
+        user.setUpdated_at(new Date());
         var response = new HashMap<String, Object>();
 
         try {
