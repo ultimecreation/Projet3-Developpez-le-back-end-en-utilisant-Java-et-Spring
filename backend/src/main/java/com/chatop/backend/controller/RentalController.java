@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -26,6 +27,9 @@ import com.chatop.backend.service.FileUploadService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -83,8 +87,9 @@ public class RentalController {
     })
     @Parameter(in = ParameterIn.HEADER, description = "Bearer Token String Required", name = "Authorization")
     @PostMapping("/rentals")
-    public ResponseEntity<?> createRental(@RequestParam("picture") MultipartFile file,
-            @RequestParam HashMap<String, String> formData) {
+    public ResponseEntity<?> createRental(
+            @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "The request has to be send with enctype='multipart/form-data'. All the fields are optional.", required = false, content = @Content(mediaType = "application/json", schema = @Schema(implementation = Rental.class), examples = @ExampleObject(value = "{ \"picture\": \"File\" ,\"name\": \"string\", \"surface\": \"string\", \"price\": \"string\", \"description\": \"string\", \"created_at\": \"string\", \"update_at\": \"string\"}"))) @RequestParam(value = "picture", required = false) MultipartFile file,
+            @RequestParam(required = false) HashMap<String, String> formData) {
 
         User owner = userRepository.findById(Integer.parseInt(formData.get("owner_id"))).orElseThrow();
 
@@ -121,9 +126,9 @@ public class RentalController {
     @Parameter(in = ParameterIn.HEADER, description = "Bearer Token String Required", name = "Authorization")
     @PutMapping("/rentals/{id}")
     public ResponseEntity<?> updateRental(
-            @RequestParam(name = "picture", required = false) MultipartFile file,
+            @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "The request has to be send with enctype='multipart/form-data'. All the fields are optional.", required = false, content = @Content(mediaType = "application/json", examples = @ExampleObject(value = "{ \"picture\": \"File\" ,\"name\": \"string\", \"surface\": \"string\", \"price\": \"string\", \"description\": \"string\", \"created_at\": \"string\", \"update_at\": \"string\"}"))) @RequestParam(name = "picture", required = false) MultipartFile file,
             @PathVariable int id,
-            @RequestParam HashMap<String, String> formData) {
+            @RequestParam(required = false) HashMap<String, String> formData) {
 
         Rental rental = rentalRepository.findById(id).orElseThrow();
 
