@@ -3,7 +3,6 @@ package com.chatop.backend.dto;
 import java.time.LocalDate;
 
 import com.chatop.backend.entity.Rental;
-import com.chatop.backend.entity.User;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import lombok.Data;

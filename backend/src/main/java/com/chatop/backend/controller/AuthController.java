@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.chatop.backend.dto.LoginDto;
 import com.chatop.backend.dto.RegisterDto;
+import com.chatop.backend.dto.UserResponseDto;
 import com.chatop.backend.entity.User;
 import com.chatop.backend.repository.UserRepository;
 import com.chatop.backend.service.JwtService;
@@ -131,9 +132,14 @@ public class AuthController {
     @SecurityRequirement(name = "Bearer")
     @GetMapping("/me")
     public ResponseEntity<?> me() {
-        var user = userRepository.findById(24);
 
-        return ResponseEntity.ok(user);
+        User user = userRepository.findById(1).orElseThrow(() -> new IllegalArgumentException("User not found"));
+        if (user != null) {
+            UserResponseDto userToReturn = new UserResponseDto(user);
+            return ResponseEntity.ok(userToReturn);
+        }
+        return ResponseEntity.badRequest().body("An unexpected error occured");
+
     }
 
 }

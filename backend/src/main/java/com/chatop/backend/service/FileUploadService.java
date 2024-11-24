@@ -1,19 +1,14 @@
 package com.chatop.backend.service;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.Timestamp;
-import java.util.HashMap;
-import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
-import com.chatop.backend.entity.User;
 
 @Service
 public class FileUploadService {
@@ -62,4 +57,3 @@ public class FileUploadService {
     // return false;
     // }
 }
-// 1732391719299_html_validation.PNG
