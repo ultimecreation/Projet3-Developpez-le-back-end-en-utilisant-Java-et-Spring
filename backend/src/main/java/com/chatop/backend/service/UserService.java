@@ -20,12 +20,6 @@ public class UserService implements UserDetailsService {
         User user = userRepository.findByEmail(email);
 
         return (user == null) ? null : user;
-
-        // var springUser = User.withUsername(appUser.getEmail())
-        // .password(appUser.getPassword())
-        // .roles(appUser.getRole())
-        // .build();
-        // return springUser;
     }
 
 }
