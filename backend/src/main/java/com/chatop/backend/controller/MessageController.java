@@ -49,7 +49,7 @@ public class MessageController {
     })
     @Parameter(in = ParameterIn.HEADER, description = "Bearer Token String Required", name = "Authorization")
     @PostMapping("/messages")
-    public ResponseEntity<?> messages(@Valid @RequestBody MessageRequestDto body, BindingResult result) {
+    public ResponseEntity<Object> messages(@Valid @RequestBody MessageRequestDto body, BindingResult result) {
         if (result.hasErrors()) {
             var errorsList = result.getAllErrors();
             var errorsMap = new HashMap<String, String>();

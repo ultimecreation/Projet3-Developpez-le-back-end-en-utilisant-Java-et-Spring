@@ -24,6 +24,7 @@ import java.util.HashMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
@@ -131,9 +132,9 @@ public class AuthController {
     @Parameter(in = ParameterIn.HEADER, description = "Bearer Token String Required", name = "Authorization")
     @SecurityRequirement(name = "Bearer")
     @GetMapping("/me")
-    public ResponseEntity<?> me() {
+    public ResponseEntity<Object> me(Authentication authentication) {
 
-        User user = userRepository.findById(1).orElseThrow(() -> new IllegalArgumentException("User not found"));
+        var user = (User) authentication.getPrincipal();
         if (user != null) {
             UserResponseDto userToReturn = new UserResponseDto(user);
             return ResponseEntity.ok(userToReturn);

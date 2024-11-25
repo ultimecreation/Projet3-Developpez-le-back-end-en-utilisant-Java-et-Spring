@@ -34,7 +34,7 @@ public class UserController {
     })
     @Parameter(in = ParameterIn.HEADER, description = "Bearer Token String Required", name = "Authorization")
     @GetMapping("/user/{id}")
-    public ResponseEntity<?> messages(@PathVariable int id) {
+    public ResponseEntity<Object> messages(@PathVariable int id) {
         User user = userRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("User not found"));
         if (user != null) {
             UserResponseDto userToReturn = new UserResponseDto(user);

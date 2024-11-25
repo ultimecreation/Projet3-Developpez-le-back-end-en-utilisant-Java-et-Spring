@@ -72,7 +72,7 @@ public class RentalController {
     })
     @Parameter(in = ParameterIn.HEADER, description = "Bearer Token String Required", name = "Authorization")
     @GetMapping("/rentals/{id}")
-    public ResponseEntity<?> getRentalById(@PathVariable int id) {
+    public ResponseEntity<RentalResponseDto> getRentalById(@PathVariable int id) {
 
         Rental rental = rentalRepository.findById(id).orElseThrow();
         RentalResponseDto rentalResponseDto = new RentalResponseDto(rental);
@@ -86,7 +86,7 @@ public class RentalController {
     })
     @Parameter(in = ParameterIn.HEADER, description = "Bearer Token String Required", name = "Authorization")
     @PostMapping("/rentals")
-    public ResponseEntity<?> createRental(
+    public ResponseEntity<Object> createRental(
             @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "The request has to be send with enctype='multipart/form-data'. All the fields are optional.", required = false, content = @Content(mediaType = "application/json", schema = @Schema(implementation = Rental.class), examples = @ExampleObject(value = "{ \"picture\": \"File\" ,\"name\": \"string\", \"surface\": \"string\", \"price\": \"string\", \"description\": \"string\", \"created_at\": \"string\", \"update_at\": \"string\"}"))) @RequestParam(value = "picture", required = false) MultipartFile file,
             @RequestParam(required = false) HashMap<String, String> formData) {
 
@@ -124,7 +124,7 @@ public class RentalController {
     })
     @Parameter(in = ParameterIn.HEADER, description = "Bearer Token String Required", name = "Authorization")
     @PutMapping("/rentals/{id}")
-    public ResponseEntity<?> updateRental(
+    public ResponseEntity<Object> updateRental(
             @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "The request has to be send with enctype='multipart/form-data'. All the fields are optional.", required = false, content = @Content(mediaType = "application/json", examples = @ExampleObject(value = "{ \"picture\": \"File\" ,\"name\": \"string\", \"surface\": \"string\", \"price\": \"string\", \"description\": \"string\", \"created_at\": \"string\", \"update_at\": \"string\"}"))) @RequestParam(name = "picture", required = false) MultipartFile file,
             @PathVariable int id,
             @RequestParam(required = false) HashMap<String, String> formData) {
