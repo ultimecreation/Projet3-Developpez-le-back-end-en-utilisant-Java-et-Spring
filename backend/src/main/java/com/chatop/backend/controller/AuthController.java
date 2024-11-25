@@ -9,6 +9,7 @@ import com.chatop.backend.dto.UserResponseDto;
 import com.chatop.backend.entity.User;
 import com.chatop.backend.repository.UserRepository;
 import com.chatop.backend.service.JwtService;
+import com.chatop.backend.service.UserService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -40,6 +41,8 @@ public class AuthController {
 
     @Autowired
     UserRepository userRepository;
+    @Autowired
+    UserService userService;
 
     @Autowired
     JwtService jwtService;
@@ -57,12 +60,7 @@ public class AuthController {
             BindingResult result) {
 
         if (result.hasErrors()) {
-            var errorsList = result.getAllErrors();
-            var errorsMap = new HashMap<String, String>();
-            for (int i = 0; i < errorsList.size(); i++) {
-                var error = (FieldError) errorsList.get(i);
-                errorsMap.put(error.getField(), error.getDefaultMessage());
-            }
+            HashMap<String, String> errorsMap = this.getErrors(result);
             return ResponseEntity.badRequest().body(errorsMap);
         }
 
@@ -78,7 +76,7 @@ public class AuthController {
         var response = new HashMap<String, Object>();
 
         try {
-            userRepository.save(user);
+            userService.saveUser(user);
             String jwtToken = jwtService.generateJwtToken(user);
             response.put("token", jwtToken);
             return ResponseEntity.ok(response);
@@ -98,12 +96,7 @@ public class AuthController {
     public ResponseEntity<Object> login(@Valid @RequestBody LoginDto loginDto, BindingResult result) {
 
         if (result.hasErrors()) {
-            var errorsList = result.getAllErrors();
-            var errorsMap = new HashMap<String, String>();
-            for (int i = 0; i < errorsList.size(); i++) {
-                var error = (FieldError) errorsList.get(i);
-                errorsMap.put(error.getField(), error.getDefaultMessage());
-            }
+            HashMap<String, String> errorsMap = this.getErrors(result);
             return ResponseEntity.badRequest().body(errorsMap);
         }
 
@@ -111,7 +104,7 @@ public class AuthController {
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(loginDto.getEmail(), loginDto.getPassword()));
 
-            User user = userRepository.findByEmail(loginDto.getEmail());
+            User user = userService.getUserByEmail(loginDto.getEmail());
             String jwtToken = jwtService.generateJwtToken(user);
 
             var response = new HashMap<String, Object>();
@@ -141,6 +134,17 @@ public class AuthController {
         }
         return ResponseEntity.badRequest().body("An unexpected error occured");
 
+    }
+
+    public HashMap<String, String> getErrors(BindingResult result) {
+
+        var errorsList = result.getAllErrors();
+        var errorsMap = new HashMap<String, String>();
+        for (int i = 0; i < errorsList.size(); i++) {
+            var error = (FieldError) errorsList.get(i);
+            errorsMap.put(error.getField(), error.getDefaultMessage());
+        }
+        return errorsMap;
     }
 
 }

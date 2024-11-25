@@ -19,9 +19,9 @@ import org.springframework.web.multipart.MultipartFile;
 import com.chatop.backend.dto.RentalResponseDto;
 import com.chatop.backend.entity.Rental;
 import com.chatop.backend.entity.User;
-import com.chatop.backend.repository.RentalRepository;
-import com.chatop.backend.repository.UserRepository;
 import com.chatop.backend.service.FileUploadService;
+import com.chatop.backend.service.RentalService;
+import com.chatop.backend.service.UserService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -42,10 +42,10 @@ public class RentalController {
     FileUploadService fileUploadService;
 
     @Autowired
-    UserRepository userRepository;
+    RentalService rentalService;
 
     @Autowired
-    RentalRepository rentalRepository;
+    UserService userService;
 
     @Operation(responses = {
             @ApiResponse(responseCode = "200", ref = "getAllRentalsSuccessRequestApi"),
@@ -55,7 +55,7 @@ public class RentalController {
     @GetMapping("/rentals")
     public ResponseEntity<HashMap<String, List<RentalResponseDto>>> getAllRentals() {
 
-        List<Rental> rentals = rentalRepository.findAll();
+        List<Rental> rentals = rentalService.getAllRentals();
         var response = new HashMap<String, List<RentalResponseDto>>();
 
         response.put("rentals", rentals
@@ -74,7 +74,7 @@ public class RentalController {
     @GetMapping("/rentals/{id}")
     public ResponseEntity<RentalResponseDto> getRentalById(@PathVariable int id) {
 
-        Rental rental = rentalRepository.findById(id).orElseThrow();
+        Rental rental = rentalService.getRentalById(id);
         RentalResponseDto rentalResponseDto = new RentalResponseDto(rental);
 
         return ResponseEntity.ok(rentalResponseDto);
@@ -90,7 +90,7 @@ public class RentalController {
             @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "The request has to be send with enctype='multipart/form-data'. All the fields are optional.", required = false, content = @Content(mediaType = "application/json", schema = @Schema(implementation = Rental.class), examples = @ExampleObject(value = "{ \"picture\": \"File\" ,\"name\": \"string\", \"surface\": \"string\", \"price\": \"string\", \"description\": \"string\", \"created_at\": \"string\", \"update_at\": \"string\"}"))) @RequestParam(value = "picture", required = false) MultipartFile file,
             @RequestParam(required = false) HashMap<String, String> formData) {
 
-        User owner = userRepository.findById(Integer.parseInt(formData.get("owner_id"))).orElseThrow();
+        User owner = userService.getUserById(Integer.parseInt(formData.get("owner_id")));
 
         String filePathToSaveInDb = this.fileUploadService.uploadFile(file, owner.getId());
 
@@ -106,7 +106,7 @@ public class RentalController {
             rental.setPicture(filePathToSaveInDb);
         }
         try {
-            rentalRepository.save(rental);
+            rentalService.saveRental(rental);
             var response = new HashMap<String, String>();
             response.put("message", "Rental created !");
             return ResponseEntity.ok(response);
@@ -129,7 +129,33 @@ public class RentalController {
             @PathVariable int id,
             @RequestParam(required = false) HashMap<String, String> formData) {
 
-        Rental rental = rentalRepository.findById(id).orElseThrow();
+        Rental rental = rentalService.getRentalById(id);
+        this.updateRentalData(rental, formData);
+
+        String filePathToSaveInDb = "";
+        if (file != null) {
+            filePathToSaveInDb = this.fileUploadService.uploadFile(file, id);
+        }
+        if (filePathToSaveInDb != "") {
+            rental.setPicture(filePathToSaveInDb);
+        }
+
+        try {
+            rentalService.saveRental(rental);
+            var response = new HashMap<String, String>();
+            response.put("message", "Rental updated !");
+
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
+            System.out.println("Error while saving rental" + e);
+        }
+
+        return ResponseEntity.badRequest().body("An unexpected error occured");
+
+    }
+
+    public Rental updateRentalData(Rental rental, HashMap<String, String> formData) {
 
         if (formData.get("name") != null) {
             rental.setName(formData.get("name"));
@@ -149,27 +175,6 @@ public class RentalController {
         if (formData.get("updated_at") != null) {
             rental.setUpdated_at(LocalDate.parse(formData.get("updated_at")));
         }
-
-        String filePathToSaveInDb = "";
-        if (file != null) {
-            filePathToSaveInDb = this.fileUploadService.uploadFile(file, id);
-        }
-        if (filePathToSaveInDb != "") {
-            rental.setPicture(filePathToSaveInDb);
-        }
-
-        try {
-            rentalRepository.save(rental);
-            var response = new HashMap<String, String>();
-            response.put("message", "Rental updated !");
-
-            return ResponseEntity.ok(response);
-
-        } catch (Exception e) {
-            System.out.println("Error while saving rental" + e);
-        }
-
-        return ResponseEntity.badRequest().body("An unexpected error occured");
-
+        return rental;
     }
 }
