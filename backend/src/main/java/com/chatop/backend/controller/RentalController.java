@@ -82,6 +82,7 @@ public class RentalController {
 
     @Operation(responses = {
             @ApiResponse(responseCode = "200", ref = "createRentalSuccessRequestApi"),
+            @ApiResponse(responseCode = "400", ref = "createRentalBadRequestRequestApi"),
             @ApiResponse(responseCode = "401", ref = "unauthorizedRequestApi"),
     })
     @Parameter(in = ParameterIn.HEADER, description = "Bearer Token String Required", name = "Authorization")
@@ -90,8 +91,12 @@ public class RentalController {
             @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "The request has to be send with enctype='multipart/form-data'. All the fields are optional.", required = false, content = @Content(mediaType = "application/json", schema = @Schema(implementation = Rental.class), examples = @ExampleObject(value = "{ \"picture\": \"File\" ,\"name\": \"string\", \"surface\": \"string\", \"price\": \"string\", \"description\": \"string\", \"created_at\": \"string\", \"update_at\": \"string\"}"))) @RequestParam(value = "picture", required = false) MultipartFile file,
             @RequestParam(required = false) HashMap<String, String> formData) {
 
-        User owner = userService.getUserById(Integer.parseInt(formData.get("owner_id")));
+        HashMap<String, String> errorsMap = this.getValidationErrors(file, formData);
+        if (!errorsMap.isEmpty()) {
+            return ResponseEntity.badRequest().body(errorsMap);
+        }
 
+        User owner = userService.getUserById(Integer.parseInt(formData.get("owner_id")));
         String filePathToSaveInDb = this.fileUploadService.uploadFile(file, owner.getId());
 
         Rental rental = new Rental();
@@ -176,5 +181,35 @@ public class RentalController {
             rental.setUpdated_at(LocalDate.parse(formData.get("updated_at")));
         }
         return rental;
+    }
+
+    public HashMap<String, String> getValidationErrors(MultipartFile file, HashMap<String, String> formData) {
+        var errors = new HashMap<String, String>();
+        if (formData.get("name") == null) {
+            errors.put("name", "name is required");
+        }
+        if (formData.get("surface") == null) {
+            errors.put("surface", "surface is required");
+        }
+        if (formData.get("price") == null) {
+            errors.put("price", "price is required");
+        }
+        if (file == null) {
+            errors.put("file", "picture is required");
+        }
+        if (formData.get("description") == null) {
+            errors.put("description", "description is required");
+        }
+        if (formData.get("owner_id") == null) {
+            errors.put("owner_id", "owner_id is required");
+        }
+        if (formData.get("created_at") == null) {
+            errors.put("created_at", "created_at is required");
+        }
+        if (formData.get("updated_at") == null) {
+            errors.put("updated_at", "updated_at is required");
+        }
+
+        return errors;
     }
 }

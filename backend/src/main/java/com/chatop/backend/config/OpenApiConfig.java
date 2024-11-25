@@ -118,6 +118,12 @@ public class OpenApiConfig {
 						new io.swagger.v3.oas.models.media.MediaType().addExamples("default",
 								new Example().value("{\"message\": \"Rental created !\"}"))))
 				.description("Success");
+		ApiResponse createRentalBadRequestRequestApi = new ApiResponse().content(
+				new Content().addMediaType(MediaType.APPLICATION_JSON_VALUE,
+						new io.swagger.v3.oas.models.media.MediaType().addExamples("default",
+								new Example().value(
+										"{\"name\": \"name is required\",\"surface\": \"surface is required\",\"price\": \"price is required\",\"description\": \"description is required\",\"owner_id\": \"owner id is required\",\"picture\": \"picture is required\",\"created_at\": \"created at is required\",\"updated_at\": \"updated at is required\"}"))))
+				.description("Bad Request");
 
 		ApiResponse updateRentalSuccessRequestApi = new ApiResponse().content(
 				new Content().addMediaType(MediaType.APPLICATION_JSON_VALUE,
@@ -144,6 +150,7 @@ public class OpenApiConfig {
 		components.addResponses("getAllRentalsSuccessRequestApi", getAllRentalsSuccessRequestApi);
 		components.addResponses("getSingleRentalSuccessRequestApi", getSingleRentalSuccessRequestApi);
 		components.addResponses("createRentalSuccessRequestApi", createRentalSuccessRequestApi);
+		components.addResponses("createRentalBadRequestRequestApi", createRentalBadRequestRequestApi);
 		components.addResponses("updateRentalSuccessRequestApi", updateRentalSuccessRequestApi);
 
 		return new OpenAPI()
