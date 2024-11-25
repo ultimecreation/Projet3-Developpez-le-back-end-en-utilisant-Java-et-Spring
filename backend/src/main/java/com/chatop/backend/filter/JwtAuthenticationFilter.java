@@ -1,7 +1,9 @@
 package com.chatop.backend.filter;
 
 import java.io.IOException;
+import java.util.Arrays;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -33,24 +35,30 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         try {
 
             String bearerToken = request.getHeader("Authorization");
-            if (bearerToken == null || !bearerToken.startsWith("Bearer ")) {
-                throw new Exception("Bearer token not found");
+            String currentUrl = ((HttpServletRequest) request).getRequestURL().toString();
+
+            if (currentUrl.contains("/api/auth/me") || currentUrl.contains("/api/user")
+                    || currentUrl.contains("/api/rental") || currentUrl.contains("/api/message")) {
+
+                if (bearerToken == null && !bearerToken.startsWith("Bearer ")) {
+                    throw new Exception("Bearer token not found");
+                }
+
+                String jwt = bearerToken.substring(7);
+                Claims claims = jwtService.getTokenClaims(jwt);
+
+                if (claims == null) {
+                    throw new Exception("Token not valid");
+                }
+
+                String email = claims.getSubject();
+                var userDetails = userService.loadUserByUsername(email);
+
+                UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
+                        userDetails, null, userDetails.getAuthorities());
+
+                SecurityContextHolder.getContext().setAuthentication(authenticationToken);
             }
-
-            String jwt = bearerToken.substring(7);
-            Claims claims = jwtService.getTokenClaims(jwt);
-
-            if (claims == null) {
-                throw new Exception("Token not valid");
-            }
-
-            String email = claims.getSubject();
-            var userDetails = userService.loadUserByUsername(email);
-
-            UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
-                    userDetails, null, userDetails.getAuthorities());
-
-            SecurityContextHolder.getContext().setAuthentication(authenticationToken);
 
         } catch (Exception e) {
             System.out.println("there was an error");
