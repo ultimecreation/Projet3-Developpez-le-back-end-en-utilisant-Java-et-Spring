@@ -22,4 +22,17 @@ public class UserService implements UserDetailsService {
         return (user == null) ? null : user;
     }
 
+    public User getUserById(int id) {
+        return userRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("User not found"));
+    }
+
+    public User getUserByEmail(String email) {
+        return userRepository.findByEmail(email);
+    }
+
+    public User saveUser(User user) {
+        return userRepository.save(user);
+
+    }
+
 }

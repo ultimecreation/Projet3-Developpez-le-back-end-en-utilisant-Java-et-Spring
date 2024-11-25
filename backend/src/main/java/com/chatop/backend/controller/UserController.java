@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.chatop.backend.dto.UserResponseDto;
 import com.chatop.backend.entity.User;
-import com.chatop.backend.repository.UserRepository;
+import com.chatop.backend.service.UserService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -25,7 +25,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 public class UserController {
 
     @Autowired
-    UserRepository userRepository;
+    UserService userService;
 
     @Operation(responses = {
             @ApiResponse(responseCode = "200", ref = "userSuccessRequestApi"),
@@ -35,7 +35,7 @@ public class UserController {
     @Parameter(in = ParameterIn.HEADER, description = "Bearer Token String Required", name = "Authorization")
     @GetMapping("/user/{id}")
     public ResponseEntity<Object> messages(@PathVariable int id) {
-        User user = userRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("User not found"));
+        User user = this.userService.getUserById(id);
         if (user != null) {
             UserResponseDto userToReturn = new UserResponseDto(user);
             return ResponseEntity.ok(userToReturn);
