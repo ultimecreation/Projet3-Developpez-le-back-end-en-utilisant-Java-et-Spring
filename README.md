@@ -12,6 +12,9 @@ To make things easier, the frontend and backend code are available on this repos
 - clone the project
 - then navigate to the `front` folder using your integrated terminal
 - run the command `npm install`
+  
   ![front-1](https://github.com/user-attachments/assets/ba44eb81-a50e-4c1c-9359-40eb7f7b76a9)
+
+- Once done, run the command `npm start` and the frontend will be available at [this url](http://localhost:4200/) `http://localhost:4200/`
 
 # Projet3-Developpez-le-back-end-en-utilisant-Java-et-Spring
