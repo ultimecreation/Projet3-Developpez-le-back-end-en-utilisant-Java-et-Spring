@@ -17,4 +17,12 @@ To make things easier, the frontend and backend code are available on this repos
 
 - Once done, run the command `npm start` and the frontend will be available at [this url](http://localhost:4200/) `http://localhost:4200/`
 
+  Now you can open a new terminal and start the backend like so :
+
+- navigato the backend folder
+- Open the Application.java file and click on the run button just above `public static void main(String[] args)`
+
+![backend-1](https://github.com/user-attachments/assets/54b8772b-7199-447f-8d62-0e2002af0c2f)
+
+
 # Projet3-Developpez-le-back-end-en-utilisant-Java-et-Spring
