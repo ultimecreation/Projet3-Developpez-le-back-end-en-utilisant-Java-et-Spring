@@ -36,10 +36,8 @@ public class FileUploadService {
             if (e instanceof FileAlreadyExistsException) {
                 throw new RuntimeException("A file of that name already exists.");
             }
-
             throw new RuntimeException(e.getMessage());
         }
-
     }
 
     public String getFilename(MultipartFile file) {
@@ -47,13 +45,4 @@ public class FileUploadService {
         var timeInMillis = timestamp.getTime();
         return this.filename = timeInMillis + "_" + file.getOriginalFilename();
     }
-
-    // public boolean fileExists(String finalPathPart) {
-
-    // Path path = Paths.get(uploadPath + finalPathPart);
-    // if (Files.exists(path)) {
-    // return true;
-    // }
-    // return false;
-    // }
 }

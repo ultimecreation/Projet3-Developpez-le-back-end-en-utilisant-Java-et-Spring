@@ -161,7 +161,6 @@ public class RentalController {
     }
 
     public Rental updateRentalData(Rental rental, HashMap<String, String> formData) {
-
         if (formData.get("name") != null) {
             rental.setName(formData.get("name"));
         }

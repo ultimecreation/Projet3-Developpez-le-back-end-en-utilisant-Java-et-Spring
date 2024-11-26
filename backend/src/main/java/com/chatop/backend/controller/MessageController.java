@@ -9,6 +9,9 @@ import com.chatop.backend.entity.User;
 import com.chatop.backend.repository.MessageRepository;
 import com.chatop.backend.repository.RentalRepository;
 import com.chatop.backend.repository.UserRepository;
+import com.chatop.backend.service.MessageService;
+import com.chatop.backend.service.RentalService;
+import com.chatop.backend.service.UserService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -33,14 +36,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @SecurityRequirement(name = "Bearer")
 @RequestMapping("/api")
 public class MessageController {
-    @Autowired
-    UserRepository userRepository;
 
     @Autowired
-    RentalRepository rentalRepository;
+    MessageService messageService;
 
     @Autowired
-    MessageRepository messageRepository;
+    RentalService rentalService;
+
+    @Autowired
+    UserService userService;
 
     @Operation(responses = {
             @ApiResponse(responseCode = "200", ref = "messageSuccessRequestApi"),
@@ -61,13 +65,15 @@ public class MessageController {
         }
 
         try {
-            User user = userRepository.findById(Integer.parseInt(body.getUser_id())).orElseThrow();
-            Rental rental = rentalRepository.findById(Integer.parseInt(body.getRental_id())).orElseThrow();
+            User user = userService.getUserById(Integer.parseInt(body.getUser_id()));
+            Rental rental = rentalService.getRentalById(Integer.parseInt(body.getRental_id()));
+
             Message message = new Message();
             message.setMessage(body.getMessage());
             message.setUser(user);
             message.setRental(rental);
-            messageRepository.save(message);
+
+            messageService.saveMessage(message);
 
             var response = new HashMap<String, String>();
             response.put("message", "Message send with success");
