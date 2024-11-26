@@ -24,5 +24,6 @@ To make things easier, the frontend and backend code are available on this repos
 
 ![backend-1](https://github.com/user-attachments/assets/54b8772b-7199-447f-8d62-0e2002af0c2f)
 
+![backend-2](https://github.com/user-attachments/assets/179d7947-aaa4-4615-9a54-115b9178d33f)
 
 # Projet3-Developpez-le-back-end-en-utilisant-Java-et-Spring
