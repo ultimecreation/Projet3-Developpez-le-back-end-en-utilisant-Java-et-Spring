@@ -6,6 +6,9 @@
 - You can also use [Xampp to get mysql and phpMyAdmin easily](https://www.apachefriends.org/)
 - Or, if you have Docker installed on your machine, you can follow this 5 min [tutorial](https://tecadmin.net/docker-compose-for-mysql-with-phpmyadmin/)
 
+Note: Feel free to update your environment file `application.properties`
+
+
 ## Setup the project itself
 To make things easier, the frontend and backend code are available on this repository
 
