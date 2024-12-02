@@ -29,11 +29,5 @@ To make things easier, the frontend and backend code are available on this repos
 
 ![backend-2](https://github.com/user-attachments/assets/179d7947-aaa4-4615-9a54-115b9178d33f)
 
-## Testing
-### Backend tests
-- open your integrated terminal and navigate to your `back` folder
-- run the command `mvn clean test`
 
-
-### Frontend tests
 
