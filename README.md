@@ -30,4 +30,5 @@ To make things easier, the frontend and backend code are available on this repos
 ![backend-2](https://github.com/user-attachments/assets/179d7947-aaa4-4615-9a54-115b9178d33f)
 
 
-
+## Swagger 
+- you can find the swagger dosumentaion [here](http://localhost:8080/swagger-ui/index.html) at http://localhost:8080/swagger-ui/index.html
