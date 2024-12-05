@@ -7,12 +7,14 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.Timestamp;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public class FileUploadService {
-
+    @Value("${site.url}")
+    String siteUrl;
     private String filePathToSaveInDb = "";
     private String filename = "";
     private String uploadPath = "backend/src/main/resources/static/uploads/";
@@ -30,7 +32,7 @@ public class FileUploadService {
             this.filename = this.getFilename(file);
             Files.copy(file.getInputStream(), root.resolve(this.filename));
 
-            this.filePathToSaveInDb = "uploads/" + subFolder + "/" + this.filename;
+            this.filePathToSaveInDb = siteUrl + "/uploads/" + subFolder + "/" + this.filename;
             return filePathToSaveInDb;
         } catch (Exception e) {
             if (e instanceof FileAlreadyExistsException) {

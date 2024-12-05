@@ -1,5 +1,19 @@
 package com.chatop.backend.controller;
 
+import java.util.Date;
+import java.util.HashMap;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -19,21 +33,6 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
-import java.util.Date;
-import java.util.HashMap;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.web.bind.annotation.GetMapping;
-
 @RestController
 @Tag(name = "Authentication")
 @RequestMapping("api/auth")
@@ -50,6 +49,11 @@ public class AuthController {
     @Autowired
     private AuthenticationManager authenticationManager;
 
+    /**
+     * @param registerDto registerDto
+     * @param result      result
+     * @return ResponseEntity
+     */
     @Operation(responses = {
             @ApiResponse(responseCode = "200", ref = "authSuccessRequestApi"),
             @ApiResponse(responseCode = "400", ref = "registerBadRequestApi"),
@@ -87,6 +91,11 @@ public class AuthController {
         return ResponseEntity.badRequest().body("An unexpected error occured");
     }
 
+    /**
+     * @param loginDto loginDto
+     * @param result   result
+     * @return ResponseEntity
+     */
     @Operation(responses = {
             @ApiResponse(responseCode = "200", ref = "authSuccessRequestApi"),
             @ApiResponse(responseCode = "400", ref = "loginBadRequestApi"),
@@ -118,6 +127,10 @@ public class AuthController {
         return ResponseEntity.badRequest().body("An unexpected error occured");
     }
 
+    /**
+     * @param authentication auth
+     * @return ResponseEntity
+     */
     @Operation(responses = {
             @ApiResponse(responseCode = "200", ref = "meSuccessRequestApi"),
             @ApiResponse(responseCode = "401", ref = "unauthorizedRequestApi"),
@@ -136,6 +149,10 @@ public class AuthController {
 
     }
 
+    /**
+     * @param result result
+     * @return HashMap errorsMap
+     */
     public HashMap<String, String> getErrors(BindingResult result) {
 
         var errorsList = result.getAllErrors();
