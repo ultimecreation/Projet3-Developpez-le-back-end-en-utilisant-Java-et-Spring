@@ -1,0 +1,9 @@
+com.chatop.backend
+com.chatop.backend.config
+com.chatop.backend.controller
+com.chatop.backend.dto
+com.chatop.backend.entity
+com.chatop.backend.filter
+com.chatop.backend.repository
+com.chatop.backend.service
+com.chatop.backend.validation

@@ -26,6 +26,7 @@ public class SecurityConfig {
         return http
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
+                                "javadoc/**",
                                 "/v3/api-docs",
                                 "/v3/api-docs/**",
                                 "/swagger-resources",
