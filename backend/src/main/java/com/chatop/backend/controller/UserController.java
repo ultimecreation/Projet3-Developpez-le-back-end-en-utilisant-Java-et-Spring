@@ -27,6 +27,10 @@ public class UserController {
     @Autowired
     UserService userService;
 
+    /**
+     * @param id to user id linked with the message
+     * @return returns a json object with the user or an error
+     */
     @Operation(responses = {
             @ApiResponse(responseCode = "200", ref = "userSuccessRequestApi"),
             @ApiResponse(responseCode = "400", ref = "userBadRequestRequestApi"),

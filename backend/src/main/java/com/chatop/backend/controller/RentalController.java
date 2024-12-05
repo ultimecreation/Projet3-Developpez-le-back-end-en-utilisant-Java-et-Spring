@@ -48,6 +48,9 @@ public class RentalController {
     @Autowired
     UserService userService;
 
+    /**
+     * @return returns the list of rentals
+     */
     @Operation(responses = {
             @ApiResponse(responseCode = "200", ref = "getAllRentalsSuccessRequestApi"),
             @ApiResponse(responseCode = "401", ref = "unauthorizedRequestApi"),
@@ -67,6 +70,10 @@ public class RentalController {
         return ResponseEntity.ok(response);
     }
 
+    /**
+     * @param id the rental id to retrieve
+     * @return return the rental object
+     */
     @Operation(responses = {
             @ApiResponse(responseCode = "200", ref = "getSingleRentalSuccessRequestApi"),
             @ApiResponse(responseCode = "401", ref = "unauthorizedRequestApi"),
@@ -81,6 +88,12 @@ public class RentalController {
         return ResponseEntity.ok(rentalResponseDto);
     }
 
+    /**
+     * @param file           the uploaded file
+     * @param formData       the rest of incoming on behalf of file uploaded
+     * @param authentication Springbbot Authentication class
+     * @return return a response as object
+     */
     @Operation(responses = {
             @ApiResponse(responseCode = "200", ref = "createRentalSuccessRequestApi"),
             @ApiResponse(responseCode = "400", ref = "createRentalBadRequestRequestApi"),
@@ -93,11 +106,13 @@ public class RentalController {
             @RequestParam(required = false) HashMap<String, String> formData,
             Authentication authentication) {
 
+        // get errors if any
         HashMap<String, String> errorsMap = this.getValidationErrors(file, formData);
         if (!errorsMap.isEmpty()) {
             return ResponseEntity.badRequest().body(errorsMap);
         }
 
+        // get authenticated user and computer filename
         User owner = (User) authentication.getPrincipal();
         String filePathToSaveInDb = this.fileUploadService.uploadFile(file, owner.getId());
 
@@ -125,6 +140,12 @@ public class RentalController {
         return ResponseEntity.badRequest().body("An unexpected error occured");
     }
 
+    /**
+     * @param file     incoming file data
+     * @param id       the rental's id to update
+     * @param formData the rest of incoming data on behalf of the file uploaded
+     * @return return a response as json object
+     */
     @Operation(responses = {
             @ApiResponse(responseCode = "200", ref = "updateRentalSuccessRequestApi"),
             @ApiResponse(responseCode = "401", ref = "unauthorizedRequestApi"),
@@ -139,6 +160,7 @@ public class RentalController {
         Rental rental = rentalService.getRentalById(id);
         this.updateRentalData(rental, formData);
 
+        // update file if any submitted
         String filePathToSaveInDb = "";
         if (file != null) {
             filePathToSaveInDb = this.fileUploadService.uploadFile(file, id);
@@ -162,6 +184,11 @@ public class RentalController {
 
     }
 
+    /**
+     * @param rental   the rental object to loop on
+     * @param formData the incoming data to check against the rental object
+     * @return a errors hash map if any errors are found
+     */
     public Rental updateRentalData(Rental rental, HashMap<String, String> formData) {
         if (formData.get("name") != null) {
             rental.setName(formData.get("name"));
@@ -179,11 +206,16 @@ public class RentalController {
             rental.setCreated_at(LocalDate.parse(formData.get("created_at")));
         }
         if (formData.get("updated_at") != null) {
-            rental.setUpdated_at(LocalDate.parse(formData.get("updated_at")));
+            rental.setUpdated_at(LocalDate.now());
         }
         return rental;
     }
 
+    /**
+     * @param file     incoming file
+     * @param formData incoming form data
+     * @return returns a hash map of errors if any
+     */
     public HashMap<String, String> getValidationErrors(MultipartFile file, HashMap<String, String> formData) {
         var errors = new HashMap<String, String>();
         if (formData.get("name") == null) {

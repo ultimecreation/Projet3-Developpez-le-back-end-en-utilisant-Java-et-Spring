@@ -19,9 +19,9 @@ public class RentalResponseDto {
     private String description;
     private int owner_id;
 
-    @JsonFormat(pattern = "yyyy-dd-MM")
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate created_at;
-    @JsonFormat(pattern = "yyyy-dd-MM")
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate updated_at;
 
     public RentalResponseDto(Rental rental) {

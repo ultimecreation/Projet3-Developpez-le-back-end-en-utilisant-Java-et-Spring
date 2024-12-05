@@ -12,6 +12,10 @@ public class MessageService {
     @Autowired
     MessageRepository messageRepository;
 
+    /**
+     * @param message takes a Message object
+     * @return the repository response
+     */
     public Message saveMessage(Message message) {
         return messageRepository.save(message);
     }

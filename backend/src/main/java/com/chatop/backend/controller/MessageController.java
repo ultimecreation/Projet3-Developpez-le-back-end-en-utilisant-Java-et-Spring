@@ -43,6 +43,11 @@ public class MessageController {
     @Autowired
     UserService userService;
 
+    /**
+     * @param body   the request body
+     * @param result the errors found if any
+     * @return
+     */
     @Operation(responses = {
             @ApiResponse(responseCode = "200", ref = "messageSuccessRequestApi"),
             @ApiResponse(responseCode = "400", ref = "messageBadRequestRequestApi"),

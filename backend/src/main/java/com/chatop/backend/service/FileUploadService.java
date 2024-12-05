@@ -19,6 +19,11 @@ public class FileUploadService {
     private String filename = "";
     private String uploadPath = "backend/src/main/resources/static/uploads/";
 
+    /**
+     * @param file      incoming file
+     * @param subFolder user id represents the subfolder
+     * @return returns the file url
+     */
     public String uploadFile(MultipartFile file, Integer subFolder) {
         Path root = Paths.get(uploadPath.concat(subFolder.toString()));
 
@@ -42,6 +47,10 @@ public class FileUploadService {
         }
     }
 
+    /**
+     * @param file generate the filename
+     * @return return the filename as string
+     */
     public String getFilename(MultipartFile file) {
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
         var timeInMillis = timestamp.getTime();

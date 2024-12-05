@@ -15,6 +15,10 @@ public class JwtService {
     @Value("${security.jwt.secret-key}")
     private String secretKey;
 
+    /**
+     * @param user incoming user
+     * @return a jwt string
+     */
     public String generateJwtToken(User user) {
 
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
@@ -28,6 +32,10 @@ public class JwtService {
                 .compact();
     }
 
+    /**
+     * @param token a token string
+     * @return Clians
+     */
     public Claims getTokenClaims(String token) {
 
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
@@ -47,7 +55,7 @@ public class JwtService {
                 return claims;
             }
         } catch (Exception e) {
-            // TODO: handle exception
+
         }
         return null;
     }
