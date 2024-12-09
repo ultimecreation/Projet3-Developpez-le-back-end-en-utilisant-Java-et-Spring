@@ -32,11 +32,16 @@ To make things easier, the frontend and backend code are available on this repos
 To setup the env variables :
 
 - create a file in your at `/src/main/resources/.env`
+- 
+![env](https://github.com/user-attachments/assets/7e3e684a-653b-4f3c-98c1-caa14e6e041a)
+
 - then fill it with your credentials (see examples below)
   - BD_USERNAME=my_db_username
   - BD_PASSWORD=my_password
   - DB_URL=jdbc:mysql://localhost:my_db_port/my_db_name
   - JWT_SECRET=my_jwt_secret_key
+  - 
+![env-result](https://github.com/user-attachments/assets/8704e779-4fb4-4fde-9087-8d32f79b6a8c)
 
 ## Swagger
 
