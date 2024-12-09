@@ -38,12 +38,10 @@ public class UserController {
     })
     @Parameter(in = ParameterIn.HEADER, description = "Bearer Token String Required", name = "Authorization")
     @GetMapping("/user/{id}")
-    public ResponseEntity<Object> messages(@PathVariable int id) {
+    public UserResponseDto messages(@PathVariable int id) {
         User user = this.userService.getUserById(id);
-        if (user != null) {
-            UserResponseDto userToReturn = new UserResponseDto(user);
-            return ResponseEntity.ok(userToReturn);
-        }
-        return ResponseEntity.badRequest().body("An unexpected error occured");
+        UserResponseDto userToReturn = new UserResponseDto(user);
+        return userToReturn;
+
     }
 }

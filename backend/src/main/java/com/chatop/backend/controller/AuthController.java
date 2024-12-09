@@ -4,24 +4,27 @@ import java.util.Date;
 import java.util.HashMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.chatop.backend.dto.JwtResponseDto;
 import com.chatop.backend.dto.LoginDto;
 import com.chatop.backend.dto.RegisterDto;
 import com.chatop.backend.dto.UserResponseDto;
 import com.chatop.backend.entity.User;
-import com.chatop.backend.repository.UserRepository;
 import com.chatop.backend.service.JwtService;
 import com.chatop.backend.service.UserService;
 
@@ -47,6 +50,9 @@ public class AuthController {
     @Autowired
     private AuthenticationManager authenticationManager;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     /**
      * @param registerDto registerDto
      * @param result      result
@@ -57,17 +63,11 @@ public class AuthController {
             @ApiResponse(responseCode = "400", ref = "registerBadRequestApi"),
             @ApiResponse(responseCode = "401", ref = "unauthorizedRequestApi"),
     })
+    @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/register")
-    public ResponseEntity<Object> register(@Valid @RequestBody RegisterDto registerDto,
-            BindingResult result) {
+    public JwtResponseDto register(@Valid @RequestBody RegisterDto registerDto) {
 
-        if (result.hasErrors()) {
-            HashMap<String, String> errorsMap = this.getErrors(result);
-            return ResponseEntity.badRequest().body(errorsMap);
-        }
-
-        var bcryptEncoder = new BCryptPasswordEncoder();
-        var hashedPassword = bcryptEncoder.encode(registerDto.getPassword());
+        String hashedPassword = passwordEncoder.encode(registerDto.getPassword());
 
         User user = new User();
         user.setName(registerDto.getName());
@@ -75,18 +75,11 @@ public class AuthController {
         user.setPassword(hashedPassword);
         user.setCreated_at(new Date());
         user.setUpdated_at(new Date());
-        var response = new HashMap<String, Object>();
+        userService.saveUser(user);
 
-        try {
-            userService.saveUser(user);
-            String jwtToken = jwtService.generateJwtToken(user);
-            response.put("token", jwtToken);
-            return ResponseEntity.ok(response);
+        JwtResponseDto jwtResponseDto = new JwtResponseDto(jwtService.generateJwtToken(user));
+        return jwtResponseDto;
 
-        } catch (Exception e) {
-            System.out.println("there was an error while saving in db");
-        }
-        return ResponseEntity.badRequest().body("An unexpected error occured");
     }
 
     /**
@@ -100,29 +93,14 @@ public class AuthController {
             @ApiResponse(responseCode = "401", ref = "unauthorizedRequestApi"),
     })
     @PostMapping("/login")
-    public ResponseEntity<Object> login(@Valid @RequestBody LoginDto loginDto, BindingResult result) {
+    public JwtResponseDto login(@Valid @RequestBody LoginDto loginDto, BindingResult result) {
 
-        if (result.hasErrors()) {
-            HashMap<String, String> errorsMap = this.getErrors(result);
-            return ResponseEntity.badRequest().body(errorsMap);
-        }
+        authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(loginDto.getEmail(), loginDto.getPassword()));
 
-        try {
-            authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(loginDto.getEmail(), loginDto.getPassword()));
-
-            User user = userService.getUserByEmail(loginDto.getEmail());
-            String jwtToken = jwtService.generateJwtToken(user);
-
-            var response = new HashMap<String, Object>();
-            response.put("token", jwtToken);
-            return ResponseEntity.ok(response);
-
-        } catch (Exception e) {
-            System.out.println("there was an error during the login process");
-        }
-
-        return ResponseEntity.badRequest().body("An unexpected error occured");
+        User user = userService.getUserByEmail(loginDto.getEmail());
+        JwtResponseDto jwtResponseDto = new JwtResponseDto(jwtService.generateJwtToken(user));
+        return jwtResponseDto;
     }
 
     /**
@@ -136,30 +114,11 @@ public class AuthController {
     @Parameter(in = ParameterIn.HEADER, description = "Bearer Token String Required", name = "Authorization")
     @SecurityRequirement(name = "Bearer")
     @GetMapping("/me")
-    public ResponseEntity<Object> me(Authentication authentication) {
+    public UserResponseDto me(Authentication authentication) {
 
         var user = (User) authentication.getPrincipal();
-        if (user != null) {
-            UserResponseDto userToReturn = new UserResponseDto(user);
-            return ResponseEntity.ok(userToReturn);
-        }
-        return ResponseEntity.badRequest().body("An unexpected error occured");
 
+        UserResponseDto userToReturn = new UserResponseDto(user);
+        return userToReturn;
     }
-
-    /**
-     * @param result result
-     * @return HashMap errorsMap
-     */
-    public HashMap<String, String> getErrors(BindingResult result) {
-
-        var errorsList = result.getAllErrors();
-        var errorsMap = new HashMap<String, String>();
-        for (int i = 0; i < errorsList.size(); i++) {
-            var error = (FieldError) errorsList.get(i);
-            errorsMap.put(error.getField(), error.getDefaultMessage());
-        }
-        return errorsMap;
-    }
-
 }

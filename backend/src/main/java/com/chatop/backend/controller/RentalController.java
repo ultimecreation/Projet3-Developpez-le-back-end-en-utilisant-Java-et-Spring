@@ -22,7 +22,6 @@ import com.chatop.backend.entity.Rental;
 import com.chatop.backend.entity.User;
 import com.chatop.backend.service.FileUploadService;
 import com.chatop.backend.service.RentalService;
-import com.chatop.backend.service.UserService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -45,9 +44,6 @@ public class RentalController {
     @Autowired
     private RentalService rentalService;
 
-    @Autowired
-    private UserService userService;
-
     /**
      * @return returns the list of rentals
      */
@@ -57,17 +53,12 @@ public class RentalController {
     })
     @Parameter(in = ParameterIn.HEADER, description = "Bearer Token String Required", name = "Authorization")
     @GetMapping("/rentals")
-    public ResponseEntity<HashMap<String, List<RentalResponseDto>>> getAllRentals() {
+    public List<RentalResponseDto> getAllRentals() {
 
         List<Rental> rentals = rentalService.getAllRentals();
-        var response = new HashMap<String, List<RentalResponseDto>>();
-
-        response.put("rentals", rentals
-                .stream()
-                .map((rental) -> new RentalResponseDto(rental))
-                .collect(Collectors.toList()));
-
-        return ResponseEntity.ok(response);
+        return rentals.stream()
+                .map((Rental rental) -> new RentalResponseDto(rental))
+                .collect(Collectors.toList());
     }
 
     /**
