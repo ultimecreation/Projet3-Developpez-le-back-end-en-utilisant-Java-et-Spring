@@ -6,18 +6,27 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.chatop.backend.dto.MessageResponseDto;
+import com.chatop.backend.dto.RentalCreateRequestDto;
+import com.chatop.backend.dto.RentalListResponseDto;
 import com.chatop.backend.dto.RentalResponseDto;
+import com.chatop.backend.dto.RentalUpdateRequestDto;
 import com.chatop.backend.entity.Rental;
 import com.chatop.backend.entity.User;
 import com.chatop.backend.service.FileUploadService;
@@ -32,6 +41,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 
 @RestController
 @Tag(name = "Rental")
@@ -53,12 +63,15 @@ public class RentalController {
     })
     @Parameter(in = ParameterIn.HEADER, description = "Bearer Token String Required", name = "Authorization")
     @GetMapping("/rentals")
-    public List<RentalResponseDto> getAllRentals() {
+    public RentalListResponseDto getAllRentals() {
 
         List<Rental> rentals = rentalService.getAllRentals();
-        return rentals.stream()
+        List<RentalResponseDto> rentalsListToReturn = rentals.stream()
                 .map((Rental rental) -> new RentalResponseDto(rental))
                 .collect(Collectors.toList());
+        RentalListResponseDto rentalListResponseDto = new RentalListResponseDto(rentalsListToReturn);
+
+        return rentalListResponseDto;
     }
 
     /**
@@ -86,49 +99,37 @@ public class RentalController {
      * @return return a response as object
      */
     @Operation(responses = {
-            @ApiResponse(responseCode = "200", ref = "createRentalSuccessRequestApi"),
+            @ApiResponse(responseCode = "201", ref = "createRentalSuccessRequestApi"),
             @ApiResponse(responseCode = "400", ref = "createRentalBadRequestRequestApi"),
             @ApiResponse(responseCode = "401", ref = "unauthorizedRequestApi"),
     })
     @Parameter(in = ParameterIn.HEADER, description = "Bearer Token String Required", name = "Authorization")
-    @PostMapping("/rentals")
-    public ResponseEntity<Object> createRental(
-            @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "The request has to be send with enctype='multipart/form-data'. All the fields are optional.", required = false, content = @Content(mediaType = "application/json", schema = @Schema(implementation = Rental.class), examples = @ExampleObject(value = "{ \"picture\": \"File\" ,\"name\": \"string\", \"surface\": \"string\", \"price\": \"string\", \"description\": \"string\", \"created_at\": \"string\", \"update_at\": \"string\"}"))) @RequestParam(value = "picture", required = false) MultipartFile file,
-            @RequestParam(required = false) HashMap<String, String> formData,
+    @ResponseStatus(HttpStatus.CREATED)
+    @PostMapping(path = "/rentals")
+    public MessageResponseDto createRental(
+            @io.swagger.v3.oas.annotations.parameters.RequestBody(content = @Content(mediaType = "multipart/form-data", schema = @Schema(implementation = RentalCreateRequestDto.class))) @Valid RentalCreateRequestDto rentalCreateRequestDto,
             Authentication authentication) {
-
-        // get errors if any
-        HashMap<String, String> errorsMap = this.getValidationErrors(file, formData);
-        if (!errorsMap.isEmpty()) {
-            return ResponseEntity.badRequest().body(errorsMap);
-        }
 
         // get authenticated user and computer filename
         User owner = (User) authentication.getPrincipal();
-        String filePathToSaveInDb = this.fileUploadService.uploadFile(file, owner.getId());
+        String filePathToSaveInDb = this.fileUploadService.uploadFile(rentalCreateRequestDto.getPicture(),
+                owner.getId());
 
         Rental rental = new Rental();
-        rental.setName(formData.get("name"));
-        rental.setSurface(Integer.parseInt(formData.get("surface")));
-        rental.setPrice(Integer.parseInt(formData.get("price")));
-        rental.setDescription(formData.get("description"));
+        rental.setName(rentalCreateRequestDto.getName());
+        rental.setSurface(Integer.parseInt(rentalCreateRequestDto.getSurface()));
+        rental.setPrice(Integer.parseInt(rentalCreateRequestDto.getPrice()));
+        rental.setDescription(rentalCreateRequestDto.getDescription());
         rental.setOwner(owner);
         rental.setCreated_at(LocalDate.now());
         rental.setUpdated_at(LocalDate.now());
         if (filePathToSaveInDb != "") {
             rental.setPicture(filePathToSaveInDb);
         }
-        try {
-            rentalService.saveRental(rental);
-            var response = new HashMap<String, String>();
-            response.put("message", "Rental created !");
-            return ResponseEntity.ok(response);
+        rentalService.saveRental(rental);
 
-        } catch (Exception e) {
-            System.out.println("Error while saving rental" + e);
-        }
-
-        return ResponseEntity.badRequest().body("An unexpected error occured");
+        MessageResponseDto response = new MessageResponseDto("Rental created !");
+        return response;
     }
 
     /**
@@ -144,17 +145,18 @@ public class RentalController {
     @Parameter(in = ParameterIn.HEADER, description = "Bearer Token String Required", name = "Authorization")
     @PutMapping("/rentals/{id}")
     public ResponseEntity<Object> updateRental(
-            @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "The request has to be send with enctype='multipart/form-data'. All the fields are optional.", required = false, content = @Content(mediaType = "application/json", examples = @ExampleObject(value = "{ \"picture\": \"File\" ,\"name\": \"string\", \"surface\": \"string\", \"price\": \"string\", \"description\": \"string\", \"created_at\": \"string\", \"update_at\": \"string\"}"))) @RequestParam(name = "picture", required = false) MultipartFile file,
+            @io.swagger.v3.oas.annotations.parameters.RequestBody(content = @Content(mediaType = "multipart/form-data", schema = @Schema(implementation = RentalUpdateRequestDto.class)))
+
             @PathVariable int id,
-            @RequestParam(required = false) HashMap<String, String> formData) {
+            @Valid RentalUpdateRequestDto rentalUpdateRequestDto) {
 
         Rental rental = rentalService.getRentalById(id);
-        this.updateRentalData(rental, formData);
+        this.updateRentalData(rental, rentalUpdateRequestDto);
 
         // update file if any submitted
         String filePathToSaveInDb = "";
-        if (file != null) {
-            filePathToSaveInDb = this.fileUploadService.uploadFile(file, id);
+        if (rentalUpdateRequestDto.getPicture() != null) {
+            filePathToSaveInDb = this.fileUploadService.uploadFile(rentalUpdateRequestDto.getPicture(), id);
         }
         if (filePathToSaveInDb != "") {
             rental.setPicture(filePathToSaveInDb);
@@ -176,29 +178,30 @@ public class RentalController {
     }
 
     /**
-     * @param rental   the rental object to loop on
-     * @param formData the incoming data to check against the rental object
+     * @param rental                 the rental object to loop on
+     * @param rentalUpdateRequestDto the incoming data to check against the rental
+     *                               object
      * @return a errors hash map if any errors are found
      */
-    public Rental updateRentalData(Rental rental, HashMap<String, String> formData) {
-        if (formData.get("name") != null) {
-            rental.setName(formData.get("name"));
+    public Rental updateRentalData(Rental rental, RentalUpdateRequestDto rentalUpdateRequestDto) {
+        if (rentalUpdateRequestDto.getName() != null) {
+            rental.setName(rentalUpdateRequestDto.getName());
         }
-        if (formData.get("surface") != null) {
-            rental.setSurface(Integer.parseInt(formData.get("surface")));
+        if (rentalUpdateRequestDto.getSurface() != null) {
+            rental.setSurface(Integer.parseInt(rentalUpdateRequestDto.getSurface()));
         }
-        if (formData.get("price") != null) {
-            rental.setPrice(Integer.parseInt(formData.get("price")));
+        if (rentalUpdateRequestDto.getPrice() != null) {
+            rental.setPrice(Integer.parseInt(rentalUpdateRequestDto.getPrice()));
         }
-        if (formData.get("description") != null) {
-            rental.setDescription(formData.get("description"));
+        if (rentalUpdateRequestDto.getDescription() != null) {
+            rental.setDescription(rentalUpdateRequestDto.getDescription());
         }
-        if (formData.get("created_at") != null) {
-            rental.setCreated_at(LocalDate.parse(formData.get("created_at")));
-        }
-        if (formData.get("updated_at") != null) {
-            rental.setUpdated_at(LocalDate.now());
-        }
+        // if (formData.get("created_at") != null) {
+        // rental.setCreated_at(LocalDate.parse(formData.get("created_at")));
+        // }
+        // if (formData.get("updated_at") != null) {
+        // rental.setUpdated_at(LocalDate.now());
+        // }
         return rental;
     }
 

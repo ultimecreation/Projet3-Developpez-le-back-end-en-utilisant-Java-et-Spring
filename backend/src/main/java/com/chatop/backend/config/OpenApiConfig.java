@@ -122,7 +122,7 @@ public class OpenApiConfig {
 				new Content().addMediaType(MediaType.APPLICATION_JSON_VALUE,
 						new io.swagger.v3.oas.models.media.MediaType().addExamples("default",
 								new Example().value(
-										"{\"name\": \"name is required\",\"surface\": \"surface is required\",\"price\": \"price is required\",\"description\": \"description is required\",\"owner_id\": \"owner id is required\",\"picture\": \"picture is required\",\"created_at\": \"created at is required\",\"updated_at\": \"updated at is required\"}"))))
+										"{\"name\": \"name is required\",\"surface\": \"surface is required\",\"price\": \"price is required\",\"description\": \"description is required\",\"picture\": \"picture is required\"}"))))
 				.description("Bad Request");
 
 		ApiResponse updateRentalSuccessRequestApi = new ApiResponse().content(
