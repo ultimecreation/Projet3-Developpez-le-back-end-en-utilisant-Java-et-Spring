@@ -32,7 +32,7 @@ To make things easier, the frontend and backend code are available on this repos
 To setup the env variables :
 
 - create a file in your at `/src/main/resources/.env`
-- 
+
 ![env](https://github.com/user-attachments/assets/7e3e684a-653b-4f3c-98c1-caa14e6e041a)
 
 - then fill it with your credentials (see examples below)
