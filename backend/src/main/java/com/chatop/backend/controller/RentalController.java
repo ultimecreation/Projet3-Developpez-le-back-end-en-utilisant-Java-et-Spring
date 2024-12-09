@@ -1,26 +1,20 @@
 package com.chatop.backend.controller;
 
 import java.time.LocalDate;
-import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
 
 import com.chatop.backend.dto.MessageResponseDto;
 import com.chatop.backend.dto.RentalCreateRequestDto;
@@ -36,7 +30,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -93,9 +86,8 @@ public class RentalController {
     }
 
     /**
-     * @param file           the uploaded file
-     * @param formData       the rest of incoming on behalf of file uploaded
-     * @param authentication Springbbot Authentication class
+     * @param rentalCreateRequestDto incoming form data with file uploaded
+     * @param authentication         Springbbot Authentication class
      * @return return a response as object
      */
     @Operation(responses = {
@@ -133,9 +125,8 @@ public class RentalController {
     }
 
     /**
-     * @param file     incoming file data
-     * @param id       the rental's id to update
-     * @param formData the rest of incoming data on behalf of the file uploaded
+     * @param id                     the rental's id to update
+     * @param rentalUpdateRequestDto incoming form data with the file uploaded
      * @return return a response as json object
      */
     @Operation(responses = {
@@ -144,7 +135,7 @@ public class RentalController {
     })
     @Parameter(in = ParameterIn.HEADER, description = "Bearer Token String Required", name = "Authorization")
     @PutMapping("/rentals/{id}")
-    public ResponseEntity<Object> updateRental(
+    public MessageResponseDto updateRental(
             @io.swagger.v3.oas.annotations.parameters.RequestBody(content = @Content(mediaType = "multipart/form-data", schema = @Schema(implementation = RentalUpdateRequestDto.class)))
 
             @PathVariable int id,
@@ -161,19 +152,10 @@ public class RentalController {
         if (filePathToSaveInDb != "") {
             rental.setPicture(filePathToSaveInDb);
         }
+        rentalService.saveRental(rental);
+        MessageResponseDto messageResponseDto = new MessageResponseDto("Rental updated !");
 
-        try {
-            rentalService.saveRental(rental);
-            var response = new HashMap<String, String>();
-            response.put("message", "Rental updated !");
-
-            return ResponseEntity.ok(response);
-
-        } catch (Exception e) {
-            System.out.println("Error while saving rental" + e);
-        }
-
-        return ResponseEntity.badRequest().body("An unexpected error occured");
+        return messageResponseDto;
 
     }
 
@@ -196,38 +178,7 @@ public class RentalController {
         if (rentalUpdateRequestDto.getDescription() != null) {
             rental.setDescription(rentalUpdateRequestDto.getDescription());
         }
-        // if (formData.get("created_at") != null) {
-        // rental.setCreated_at(LocalDate.parse(formData.get("created_at")));
-        // }
-        // if (formData.get("updated_at") != null) {
-        // rental.setUpdated_at(LocalDate.now());
-        // }
+
         return rental;
-    }
-
-    /**
-     * @param file     incoming file
-     * @param formData incoming form data
-     * @return returns a hash map of errors if any
-     */
-    public HashMap<String, String> getValidationErrors(MultipartFile file, HashMap<String, String> formData) {
-        var errors = new HashMap<String, String>();
-        if (formData.get("name") == null) {
-            errors.put("name", "name is required");
-        }
-        if (formData.get("surface") == null) {
-            errors.put("surface", "surface is required");
-        }
-        if (formData.get("price") == null) {
-            errors.put("price", "price is required");
-        }
-        if (file == null) {
-            errors.put("file", "picture is required");
-        }
-        if (formData.get("description") == null) {
-            errors.put("description", "description is required");
-        }
-
-        return errors;
     }
 }
