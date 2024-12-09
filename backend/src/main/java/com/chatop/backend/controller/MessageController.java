@@ -35,13 +35,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class MessageController {
 
     @Autowired
-    MessageService messageService;
+    private MessageService messageService;
 
     @Autowired
-    RentalService rentalService;
+    private RentalService rentalService;
 
     @Autowired
-    UserService userService;
+    private UserService userService;
 
     /**
      * @param body   the request body

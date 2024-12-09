@@ -39,12 +39,10 @@ import jakarta.validation.Valid;
 public class AuthController {
 
     @Autowired
-    UserRepository userRepository;
-    @Autowired
-    UserService userService;
+    private UserService userService;
 
     @Autowired
-    JwtService jwtService;
+    private JwtService jwtService;
 
     @Autowired
     private AuthenticationManager authenticationManager;

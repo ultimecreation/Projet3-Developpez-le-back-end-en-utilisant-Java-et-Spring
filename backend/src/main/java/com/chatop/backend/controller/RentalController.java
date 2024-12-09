@@ -40,13 +40,13 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @RequestMapping("/api")
 public class RentalController {
     @Autowired
-    FileUploadService fileUploadService;
+    private FileUploadService fileUploadService;
 
     @Autowired
-    RentalService rentalService;
+    private RentalService rentalService;
 
     @Autowired
-    UserService userService;
+    private UserService userService;
 
     /**
      * @return returns the list of rentals

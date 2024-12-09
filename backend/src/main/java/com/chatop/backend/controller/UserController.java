@@ -25,7 +25,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 public class UserController {
 
     @Autowired
-    UserService userService;
+    private UserService userService;
 
     /**
      * @param id to user id linked with the message
