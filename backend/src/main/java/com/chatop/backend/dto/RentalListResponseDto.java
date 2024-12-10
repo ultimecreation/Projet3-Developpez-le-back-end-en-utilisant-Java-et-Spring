@@ -13,12 +13,4 @@ public class RentalListResponseDto {
 
     List<RentalResponseDto> rentals;
 
-    // public List<RentalResponseDto> getRentals() {
-    // return this.rentals;
-    // }
-
-    // public List<RentalResponseDto> setRentals(List<RentalResponseDto>
-    // incomingRentals) {
-    // return this.rentals = incomingRentals;
-    // }
 }

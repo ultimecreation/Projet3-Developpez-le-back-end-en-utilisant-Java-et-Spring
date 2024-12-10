@@ -41,22 +41,19 @@ public class JwtService {
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
         var key = Keys.hmacShaKeyFor(keyBytes);
 
-        try {
-            var claims = Jwts.parser()
-                    .verifyWith(key)
-                    .build()
-                    .parseSignedClaims(token)
-                    .getPayload();
+        var claims = Jwts.parser()
+                .verifyWith(key)
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
 
-            Date expirationDate = claims.getExpiration();
-            Date currentDate = new Date();
+        Date expirationDate = claims.getExpiration();
+        Date currentDate = new Date();
 
-            if (currentDate.before(expirationDate)) {
-                return claims;
-            }
-        } catch (Exception e) {
-
+        if (currentDate.before(expirationDate)) {
+            return claims;
         }
+
         return null;
     }
 }

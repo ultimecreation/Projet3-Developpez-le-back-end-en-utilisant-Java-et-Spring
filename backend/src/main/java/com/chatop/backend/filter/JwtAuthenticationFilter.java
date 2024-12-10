@@ -29,38 +29,32 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
 
-        try {
+        String bearerToken = request.getHeader("Authorization");
+        String currentUrl = ((HttpServletRequest) request).getRequestURL().toString();
 
-            String bearerToken = request.getHeader("Authorization");
-            String currentUrl = ((HttpServletRequest) request).getRequestURL().toString();
+        if (currentUrl.contains("/api/auth/me") || currentUrl.contains("/api/user")
+                || currentUrl.contains("/api/rental") || currentUrl.contains("/api/message")) {
 
-            if (currentUrl.contains("/api/auth/me") || currentUrl.contains("/api/user")
-                    || currentUrl.contains("/api/rental") || currentUrl.contains("/api/message")) {
-
-                if (bearerToken == null && !bearerToken.startsWith("Bearer ")) {
-                    throw new Exception("Bearer token not found");
-                }
-
-                String jwt = bearerToken.substring(7);
-                Claims claims = jwtService.getTokenClaims(jwt);
-
-                if (claims == null) {
-                    throw new Exception("Token not valid");
-                }
-
-                String email = claims.getSubject();
-                var userDetails = userService.loadUserByUsername(email);
-
-                UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
-                        userDetails, null, userDetails.getAuthorities());
-
-                SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+            if (bearerToken == null && !bearerToken.startsWith("Bearer ")) {
+                throw new IOException("Bearer token not found");
             }
 
-        } catch (Exception e) {
-            System.out.println("there was an error");
-            e.printStackTrace();
+            String jwt = bearerToken.substring(7);
+            Claims claims = jwtService.getTokenClaims(jwt);
+
+            if (claims == null) {
+                throw new IOException("Token not valid");
+            }
+
+            String email = claims.getSubject();
+            var userDetails = userService.loadUserByUsername(email);
+
+            UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
+                    userDetails, null, userDetails.getAuthorities());
+
+            SecurityContextHolder.getContext().setAuthentication(authenticationToken);
         }
+
         filterChain.doFilter(request, response);
     }
 }

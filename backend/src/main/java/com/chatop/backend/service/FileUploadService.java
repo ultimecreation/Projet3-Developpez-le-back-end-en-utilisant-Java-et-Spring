@@ -24,27 +24,17 @@ public class FileUploadService {
      * @param subFolder user id represents the subfolder
      * @return returns the file url
      */
-    public String uploadFile(MultipartFile file, Integer subFolder) {
+    public String uploadFile(MultipartFile file, Integer subFolder) throws IOException {
         Path root = Paths.get(uploadPath.concat(subFolder.toString()));
 
-        try {
-            Files.createDirectories(root);
-        } catch (IOException e) {
-            throw new RuntimeException("Could not initialize folder for upload!");
-        }
+        Files.createDirectories(root);
 
-        try {
-            this.filename = this.getFilename(file);
-            Files.copy(file.getInputStream(), root.resolve(this.filename));
+        this.filename = this.getFilename(file);
+        Files.copy(file.getInputStream(), root.resolve(this.filename));
 
-            this.filePathToSaveInDb = siteUrl + "/uploads/" + subFolder + "/" + this.filename;
-            return filePathToSaveInDb;
-        } catch (Exception e) {
-            if (e instanceof FileAlreadyExistsException) {
-                throw new RuntimeException("A file of that name already exists.");
-            }
-            throw new RuntimeException(e.getMessage());
-        }
+        this.filePathToSaveInDb = siteUrl + "/uploads/" + subFolder + "/" + this.filename;
+        return filePathToSaveInDb;
+
     }
 
     /**
