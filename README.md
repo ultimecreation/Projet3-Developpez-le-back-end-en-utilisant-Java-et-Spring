@@ -36,10 +36,10 @@ To setup the env variables :
 ![env](https://github.com/user-attachments/assets/7e3e684a-653b-4f3c-98c1-caa14e6e041a)
 
 - then fill it with your credentials (see examples below)
-  - BD_USERNAME=my_db_username
-  - BD_PASSWORD=my_password
-  - DB_URL=jdbc:mysql://localhost:my_db_port/my_db_name
-  - JWT_SECRET=my_jwt_secret_key
+
+![env](https://github.com/user-attachments/assets/09392021-4212-49dd-9cc7-40769c5e98f4)
+
+
 
 ![env-result](https://github.com/user-attachments/assets/8704e779-4fb4-4fde-9087-8d32f79b6a8c)
 
