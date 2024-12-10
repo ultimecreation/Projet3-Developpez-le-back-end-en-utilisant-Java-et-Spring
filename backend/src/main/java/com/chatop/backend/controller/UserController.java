@@ -28,7 +28,7 @@ public class UserController {
 
     /**
      * @param id to user id linked with the message
-     * @return returns a json object with the user or an error
+     * @return UserResponseDto returns a json object with the user or an error
      */
     @Operation(responses = {
             @ApiResponse(responseCode = "200", ref = "userSuccessRequestApi"),

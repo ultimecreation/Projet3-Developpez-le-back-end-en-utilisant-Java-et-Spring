@@ -44,7 +44,7 @@ public class MessageController {
     /**
      * @param body   the request body
      * @param result the errors found if any
-     * @return
+     * @return MessageResponseDto
      */
     @Operation(responses = {
             @ApiResponse(responseCode = "200", ref = "messageSuccessRequestApi"),

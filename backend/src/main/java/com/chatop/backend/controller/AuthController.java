@@ -52,7 +52,7 @@ public class AuthController {
     /**
      * @param registerDto registerDto
      * @param result      result
-     * @return ResponseEntity
+     * @return JwtResponseDto
      */
     @Operation(responses = {
             @ApiResponse(responseCode = "200", ref = "authSuccessRequestApi"),
@@ -81,7 +81,7 @@ public class AuthController {
     /**
      * @param loginDto loginDto
      * @param result   result
-     * @return ResponseEntity
+     * @return JwtResponseDto
      */
     @Operation(responses = {
             @ApiResponse(responseCode = "200", ref = "authSuccessRequestApi"),
@@ -101,7 +101,7 @@ public class AuthController {
 
     /**
      * @param authentication auth
-     * @return ResponseEntity
+     * @return UserResponseDto
      */
     @Operation(responses = {
             @ApiResponse(responseCode = "200", ref = "meSuccessRequestApi"),

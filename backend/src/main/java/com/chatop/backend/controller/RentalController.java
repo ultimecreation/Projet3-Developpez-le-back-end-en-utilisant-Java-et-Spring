@@ -48,7 +48,7 @@ public class RentalController {
     private RentalService rentalService;
 
     /**
-     * @return returns the list of rentals
+     * @return RentalListResponseDto returns the list of rentals
      */
     @Operation(responses = {
             @ApiResponse(responseCode = "200", ref = "getAllRentalsSuccessRequestApi"),
@@ -69,7 +69,7 @@ public class RentalController {
 
     /**
      * @param id the rental id to retrieve
-     * @return return the rental object
+     * @return RentalResponseDto return the rental object
      */
     @Operation(responses = {
             @ApiResponse(responseCode = "200", ref = "getSingleRentalSuccessRequestApi"),
@@ -77,18 +77,18 @@ public class RentalController {
     })
     @Parameter(in = ParameterIn.HEADER, description = "Bearer Token String Required", name = "Authorization")
     @GetMapping("/rentals/{id}")
-    public ResponseEntity<RentalResponseDto> getRentalById(@PathVariable int id) {
+    public RentalResponseDto getRentalById(@PathVariable int id) {
 
         Rental rental = rentalService.getRentalById(id);
         RentalResponseDto rentalResponseDto = new RentalResponseDto(rental);
 
-        return ResponseEntity.ok(rentalResponseDto);
+        return rentalResponseDto;
     }
 
     /**
      * @param rentalCreateRequestDto incoming form data with file uploaded
      * @param authentication         Springbbot Authentication class
-     * @return return a response as object
+     * @return MessageResponseDto return a response as object
      */
     @Operation(responses = {
             @ApiResponse(responseCode = "201", ref = "createRentalSuccessRequestApi"),
@@ -127,7 +127,7 @@ public class RentalController {
     /**
      * @param id                     the rental's id to update
      * @param rentalUpdateRequestDto incoming form data with the file uploaded
-     * @return return a response as json object
+     * @return MessageResponseDto return a response as json object
      */
     @Operation(responses = {
             @ApiResponse(responseCode = "200", ref = "updateRentalSuccessRequestApi"),
