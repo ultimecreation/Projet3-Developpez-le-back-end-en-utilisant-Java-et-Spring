@@ -13,7 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 @Service
 public class FileUploadService {
     @Value("${site.url}")
-    String siteUrl;
+    private String siteUrl;
     private String filePathToSaveInDb = "";
     private String filename = "";
     private String uploadPath = "backend/src/main/resources/static/uploads/";
