@@ -1,5 +1,6 @@
 package com.chatop.backend.controller;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -99,7 +100,7 @@ public class RentalController {
     @PostMapping(path = "/rentals")
     public MessageResponseDto createRental(
             @io.swagger.v3.oas.annotations.parameters.RequestBody(content = @Content(mediaType = "multipart/form-data", schema = @Schema(implementation = RentalCreateRequestDto.class))) @Valid RentalCreateRequestDto rentalCreateRequestDto,
-            Authentication authentication) {
+            Authentication authentication) throws IOException {
 
         // get authenticated user and computer filename
         User owner = (User) authentication.getPrincipal();
@@ -138,7 +139,7 @@ public class RentalController {
             @io.swagger.v3.oas.annotations.parameters.RequestBody(content = @Content(mediaType = "multipart/form-data", schema = @Schema(implementation = RentalUpdateRequestDto.class)))
 
             @PathVariable int id,
-            @Valid RentalUpdateRequestDto rentalUpdateRequestDto) {
+            @Valid RentalUpdateRequestDto rentalUpdateRequestDto) throws IOException {
 
         Rental rental = rentalService.getRentalById(id);
         this.updateRentalData(rental, rentalUpdateRequestDto);
