@@ -1,4 +1,15 @@
 # Projet3-Developpez-le-back-end-en-utilisant-Java-et-Spring
+- Pour ce projet, j'ai été chargé de :
+    - Développer le backend
+    - Créer une documentation swagger
+    - Créer une documentation des classes composant le projet
+
+### Documentation Swagger
+![swagger](https://github.com/user-attachments/assets/f6b6dc0e-1388-4fce-a79a-9bc194b1feed)
+
+### Documentation des classes composant le projet
+![doc](https://github.com/user-attachments/assets/8429a84f-d8a2-46d7-a2a0-2a341b5319c6)
+
 
 ## Setup Mysql and PhpMyAdmin
 
@@ -38,6 +49,7 @@ To setup the env variables :
 - then fill it with your credentials (see examples below)
 
 ![env](https://github.com/user-attachments/assets/09392021-4212-49dd-9cc7-40769c5e98f4)
+
 
 
 
